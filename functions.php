@@ -15,7 +15,7 @@ function dd($d, $die = true)
     var_dump($d);
     echo '</pre>';
 
-    if ($die) die(__FILE__);
+    if ($die) die();
 }
 
 function check_array($arr)
