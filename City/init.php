@@ -5,12 +5,9 @@ use City\Module as City;
 
 try {
     City::load_settings();
-    if (!City::active()) {
-        City::disable();
-        return;
-    }
     City::get_iblocks();
     City::init();
+    City::active() ? City::enable() : City::disable();
 } catch (Exception $e) {
     dd('internal', 0);
     dd(get_class($e), 0);

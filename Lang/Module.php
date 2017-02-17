@@ -70,7 +70,6 @@ class Module
         try {
             self::get_code(self::get_list(self::iblocks()));
             self::get_items();
-            self::enable();
         } catch (\Exception $e) {
             dd('initException', 0);
             throw new $e;

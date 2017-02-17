@@ -11,6 +11,7 @@ try {
         return;
     }
     Lang::init();
+    Lang::enable();
 } catch (Exception $e) {
     dd('internal', 0);
     dd(get_class($e), 0);

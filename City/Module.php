@@ -47,6 +47,9 @@ class Module
 
     private static function check_settings($settings)
     {
+        if (!$settings['active'])
+            return true;
+        
         if ($settings['add_in_uri'] && ($settings['uri_position'] == 0))
             return 'uri_position';
 
@@ -72,7 +75,6 @@ class Module
         try {
             self::get_list(self::iblocks());
             self::get_id(self::get_code(self::get_items()));
-            self::enable();
         }
         catch (\Exception $e) {
             dd('initException',0);
