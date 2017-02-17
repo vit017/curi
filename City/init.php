@@ -1,13 +1,20 @@
 <?php
 
-define('SITE_PREFIX', '');
 use City\Module as City;
 
 try {
     City::load_settings();
     City::get_iblocks();
     City::init();
-    City::active() ? City::enable() : City::disable();
+    if (!City::active()) {
+        City::disable();
+        return;
+    }
+
+    City::enable();
+    if (City::add_in_uri())
+        Storage::add(City::class);
+
 } catch (Exception $e) {
     dd('internal', 0);
     dd(get_class($e), 0);

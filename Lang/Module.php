@@ -46,10 +46,10 @@ class Module
 
     private static function check_settings($settings)
     {
-        if ($settings['add_in_uri'] && ($settings['uri_position'] == 0))
-            return 'uri_position';
+        $position = (int)$settings['uri_position'];
+        $add_in_uri = (bool)$settings['add_in_uri'];
 
-        if (defined('URI_POSITION_' . $settings['uri_position']))
+        if ($add_in_uri && !$position)
             return 'uri_position';
 
         return true;
@@ -84,16 +84,10 @@ class Module
 
     public static function enable()
     {
-        if ($uri = self::correct_uri($_SERVER['REQUEST_URI'])) {
-            header('Location: ' . $uri);
-            exit();
-        }
         $code = self::code();
         if (!array_key_exists($code, $_COOKIE))
             setcookie(self::cookie_var(), $code, time() + self::COOKIE_TIME, '/');
 
-        $uri_position = self::uri_position();
-        define('URI_POSITION_' . $uri_position, $uri_position);
         define('LANGUAGE_CODE', $code);
     }
 
@@ -172,29 +166,5 @@ class Module
             return $iblocks[$code][$type];
 
         //throw new IBlockException();
-    }
-
-    public static function correct_uri($full_uri)
-    {
-        $uri = uri_path(preg_replace('#[/]{2,}#', '/', $full_uri . '/'));
-        $ar_uri = explode('/', $uri);
-        $uri_position = self::uri_position();
-        $add_in_uri = self::add_in_uri();
-        $in_uri = self::in_uri();
-
-        if (!array_key_exists($uri_position, $ar_uri))
-            return;
-
-        $count = count($ar_uri);
-
-        if (!$add_in_uri && $in_uri)
-            array_splice($ar_uri, $uri_position, 1);
-        elseif ($add_in_uri && !$in_uri)
-            array_splice($ar_uri, $uri_position, 0, self::code());
-
-        if ($count == count($ar_uri))
-            return;
-
-        return implode('/', $ar_uri) . uri_query($full_uri);
     }
 }

@@ -13,7 +13,7 @@ class Module
     const IBLOCKS_FILE = 'iblocks.ini';
     const IBLOCK_TYPE = 'cities';
 
-    const COOKIE_TIME = 3600*24*7;
+    const COOKIE_TIME = 3600 * 24 * 7;
 
     private static $_settings = [];
     private static $_fields = [
@@ -47,16 +47,12 @@ class Module
 
     private static function check_settings($settings)
     {
-        if (!$settings['active'])
-            return true;
-        
-        if ($settings['add_in_uri'] && ($settings['uri_position'] == 0))
+        $position = (int)$settings['uri_position'];
+        $add_in_uri = (bool)$settings['add_in_uri'];
+
+        if ($add_in_uri && !$position)
             return 'uri_position';
 
-        if (defined('URI_POSITION_'.$settings['uri_position']))
-            return 'uri_position';
-
-        define('URI_POSITION_'.$settings['uri_position'], $settings['uri_position']);
         return true;
     }
 
@@ -64,7 +60,7 @@ class Module
     {
         $settings = parse_ini_file(__DIR__ . DIRECTORY_SEPARATOR . self::SETTINGS_FILE);
         if (true !== ($mess = self::check_settings($settings)))
-            throw new SettingsException($mess . ' incorrect in '.self::class);
+            throw new SettingsException($mess . ' incorrect in ' . self::class);
 
         self::$_settings = $settings;
         return true;
@@ -75,9 +71,8 @@ class Module
         try {
             self::get_list(self::iblocks());
             self::get_id(self::get_code(self::get_items()));
-        }
-        catch (\Exception $e) {
-            dd('initException',0);
+        } catch (\Exception $e) {
+            dd('initException', 0);
             throw new $e;
         }
     }
@@ -89,16 +84,9 @@ class Module
 
     public static function enable()
     {
-        if ($uri = self::correct_uri($_SERVER['REQUEST_URI'])) {
-            header('Location: ' . $uri);
-            exit();
-        }
         $code = self::code();
         if (!array_key_exists($code, $_COOKIE))
             setcookie(self::cookie_var(), $code, time() + self::COOKIE_TIME, '/');
-
-        $uri_position = self::uri_position();
-        define('URI_POSITION_' . $uri_position, $uri_position);
     }
 
     public static function get_iblocks()
@@ -145,7 +133,8 @@ class Module
         return $code;
     }
 
-    public static function get_id($code) {
+    public static function get_id($code)
+    {
         $items = self::items();
         if (!array_key_exists($code, $items))
             throw new ItemsException();
@@ -186,28 +175,5 @@ class Module
             return $iblocks[$code][$type];
 
         //throw new IBlockException();
-    }
-
-    public static function correct_uri($full_uri) {
-        $uri = uri_path(preg_replace('#[/]{2,}#', '/', $full_uri.'/'));
-        $ar_uri = explode('/', $uri);
-        $uri_position = self::uri_position();
-        $add_in_uri = self::add_in_uri();
-        $in_uri = self::in_uri();
-
-        if (!array_key_exists($uri_position, $ar_uri))
-            return;
-
-        $count = count($ar_uri);
-
-        if (!$add_in_uri && $in_uri)
-            array_splice($ar_uri, $uri_position, 1);
-        elseif ($add_in_uri && !$in_uri)
-            array_splice($ar_uri, $uri_position, 0, self::code());
-
-        if ($count == count($ar_uri))
-            return;
-
-        return implode('/', $ar_uri).uri_query($full_uri);
     }
 }

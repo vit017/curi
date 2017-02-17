@@ -1,17 +1,21 @@
 <?php
 
-define('SITE_PREFIX', '');
 use Lang\Module as Lang;
 
 try {
     Lang::load_settings();
     Lang::get_iblocks();
+
     if (!Lang::active()) {
         Lang::disable();
         return;
     }
+
     Lang::init();
     Lang::enable();
+    if (Lang::add_in_uri())
+        Storage::add(Lang::class);
+
 } catch (Exception $e) {
     dd('internal', 0);
     dd(get_class($e), 0);
