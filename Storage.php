@@ -48,6 +48,7 @@ class Storage
 
     public static function get_site_prefix()
     {
+        $ar_prefix = [];
         foreach (self::$_storage as $uri_position => $class_name) {
             $ar_prefix[$uri_position] = $class_name::code();
         }

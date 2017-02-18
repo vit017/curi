@@ -24,7 +24,7 @@ class Module
         'items' => [],
     ];
 
-    private static function __callStatic($code, $arguments)
+    public static function __callStatic($code, $arguments)
     {
         if (array_key_exists($code, self::$_fields))
             return self::$_fields[$code];
@@ -78,7 +78,6 @@ class Module
 
     public static function disable()
     {
-        define('LANGUAGE_CODE', self::default_code());
         setcookie(self::cookie_var(), '', 0, '/');
     }
 
@@ -87,8 +86,6 @@ class Module
         $code = self::code();
         if (!array_key_exists($code, $_COOKIE))
             setcookie(self::cookie_var(), $code, time() + self::COOKIE_TIME, '/');
-
-        define('LANGUAGE_CODE', $code);
     }
 
     public static function get_iblocks()
@@ -124,7 +121,7 @@ class Module
         ) {
             $code = $ar_uri[$position];
             self::field('in_uri', true);
-        } elseif (($cookie_var = self::cookie_var()) && (array_key_exists($_COOKIE[$cookie_var], $list))) {
+        } elseif (($cookie_var = self::cookie_var())&& array_key_exists($cookie_var, $_COOKIE) && (array_key_exists($_COOKIE[$cookie_var], $list))) {
             $code = $_COOKIE[$cookie_var];
         }
 

@@ -7,11 +7,9 @@ try {
     City::get_iblocks();
     City::init();
     if (!City::active()) {
-        City::disable();
         return;
     }
 
-    City::enable();
     if (City::add_in_uri())
         Storage::add(City::class);
 

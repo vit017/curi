@@ -25,7 +25,7 @@ class Module
         'items' => [],
     ];
 
-    private static function __callStatic($code, $arguments)
+    public static function __callStatic($code, $arguments)
     {
         if (array_key_exists($code, self::$_fields))
             return self::$_fields[$code];
@@ -122,7 +122,7 @@ class Module
         ) {
             $code = $ar_uri[$position];
             self::field('in_uri', true);
-        } elseif (($cookie_var = self::cookie_var()) && (array_key_exists($_COOKIE[$cookie_var], $list))) {
+        } elseif (($cookie_var = self::cookie_var())&& array_key_exists($cookie_var, $_COOKIE) && (array_key_exists($_COOKIE[$cookie_var], $list))) {
             $code = $_COOKIE[$cookie_var];
         }
 
@@ -157,7 +157,7 @@ class Module
     {
         $all_items = self::cache();
         $list = self::list();
-        $iblock_id = array_key_exists(constant('LANGUAGE_CODE'), $list) ? $list[constant('LANGUAGE_CODE')] : null;
+        $iblock_id = (constant('LANGUAGE_CODE') && array_key_exists(constant('LANGUAGE_CODE'), $list)) ? $list[constant('LANGUAGE_CODE')] : null;
 
         if (!array_key_exists($iblock_id, $all_items))
             throw new ItemsException();

@@ -7,15 +7,14 @@ try {
     Lang::get_iblocks();
 
     if (!Lang::active()) {
-        Lang::disable();
-        return;
+        define('LANGUAGE_CODE', Lang::default_code());
     }
-
-    Lang::init();
-    Lang::enable();
-    if (Lang::add_in_uri())
-        Storage::add(Lang::class);
-
+    else {
+        Lang::init();
+        define('LANGUAGE_CODE', Lang::code());
+        if (Lang::add_in_uri())
+            Storage::add(Lang::class);
+    }
 } catch (Exception $e) {
     dd('internal', 0);
     dd(get_class($e), 0);
