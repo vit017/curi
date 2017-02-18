@@ -5,13 +5,15 @@ use City\Module as City;
 try {
     City::load_settings();
     City::get_iblocks();
-    City::init();
     if (!City::active()) {
-        return;
+        City::disable();
     }
-
-    if (City::add_in_uri())
-        Storage::add(City::class);
+    else {
+        City::init();
+        City::enable();
+        if (City::add_in_uri())
+            Storage::add(City::class);
+    }
 
 } catch (Exception $e) {
     dd('internal', 0);

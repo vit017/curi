@@ -22,7 +22,7 @@ unset($site_prefix);
 if (defined('AUTH_404') && ($file_path = Storage::find_file($_SERVER['REQUEST_URI']))) {
     $_SERVER["REAL_FILE_PATH"] = $file_path;
     include_once $file_path;
-    exit();
+    die();
 }
 
 include_once($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . Storage::URL_REWRITE_FILE);

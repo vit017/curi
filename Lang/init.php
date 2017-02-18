@@ -7,11 +7,11 @@ try {
     Lang::get_iblocks();
 
     if (!Lang::active()) {
-        define('LANGUAGE_CODE', Lang::default_code());
+        Lang::disable();
     }
     else {
         Lang::init();
-        define('LANGUAGE_CODE', Lang::code());
+        Lang::enable();
         if (Lang::add_in_uri())
             Storage::add(Lang::class);
     }

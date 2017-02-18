@@ -78,11 +78,13 @@ class Module
 
     public static function disable()
     {
+        define('LANGUAGE_CODE', self::default_code());
         setcookie(self::cookie_var(), '', 0, '/');
     }
 
     public static function enable()
     {
+        define('LANGUAGE_CODE', self::code());
         $code = self::code();
         if (!array_key_exists($code, $_COOKIE))
             setcookie(self::cookie_var(), $code, time() + self::COOKIE_TIME, '/');
