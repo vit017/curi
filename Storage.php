@@ -42,8 +42,8 @@ class Storage
         if ($count == count($ar_uri))
             return;
 
-        $redirect_uri = implode('/', $ar_uri) . uri_query($full_uri);
-        return preg_replace('#[/]{2,}#', '/', $redirect_uri . '/');
+        $redirect_uri = preg_replace('#[/]{2,}#', '/', implode('/', $ar_uri) . '/');
+        return $redirect_uri . uri_query($full_uri);
     }
 
     public static function get_site_prefix()
