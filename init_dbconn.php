@@ -20,7 +20,7 @@ if ($site_prefix && ($uri = Storage::correct_uri($_SERVER['REQUEST_URI']))) {
 unset($site_prefix);
 
 if (defined('AUTH_404') && ($file_path = Storage::find_file($_SERVER['REQUEST_URI']))) {
-    $_SERVER["REAL_FILE_PATH"] = $file_path;
+    //$_SERVER["REAL_FILE_PATH"] = $file_path;
     include_once $file_path;
     die();
 }
