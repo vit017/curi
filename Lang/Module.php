@@ -41,7 +41,6 @@ class Module
         }
 
         self::$_fields[$code] = $val;
-        return true;
     }
 
     private static function check_settings($settings)
@@ -62,18 +61,13 @@ class Module
             throw new SettingsException($mess . ' incorrect in ' . self::class);
 
         self::$_settings = $settings;
-        return true;
     }
 
     public static function init()
     {
-        try {
-            self::get_code(self::get_list(self::iblocks()));
-            self::get_items();
-        } catch (\Exception $e) {
-            dd('initException', 0);
-            throw new $e;
-        }
+        self::load_list();
+        self::load_code();
+        self::load_items();
     }
 
     public static function disable()
@@ -85,53 +79,64 @@ class Module
     public static function enable()
     {
         define('LANGUAGE_CODE', self::code());
-        $code = self::code();
-        if (!array_key_exists($code, $_COOKIE))
-            setcookie(self::cookie_var(), $code, time() + self::COOKIE_TIME, '/');
+        if (!self::get_from_cookie())
+            setcookie(self::cookie_var(), self::code(), time() + self::COOKIE_TIME, '/');
     }
 
-    public static function get_iblocks()
+    public static function load_iblocks()
     {
         $data = parse_ini_file(dirname(__DIR__) . DIRECTORY_SEPARATOR . self::IBLOCKS_FILE, true);
         if (!check_array($data))
             throw new IBlockException();
 
         self::field('iblocks', $data);
-        return $data;
     }
 
-    public static function get_list(array $iblocks)
+    public static function load_list()
     {
         $list = [];
-        foreach ($iblocks as $section => $ar_iblocks)
+        foreach (self::iblocks() as $section => $ar_iblocks)
             $list[$section] = $ar_iblocks[self::IBLOCK_TYPE];
 
         if (!check_array($list))
             throw new IBlockException();
 
         self::field('list', $list);
-        return $list;
     }
 
-    public static function get_code(array $list)
+    private static function get_from_uri($uri)
     {
-        $code = null;
-        if (($ar_uri = explode('/', uri_path($_SERVER['REQUEST_URI'])))
-            && ($position = self::uri_position())
-            && array_key_exists($position, $ar_uri)
-            && array_key_exists($ar_uri[$position], $list)
+        $ar_uri = explode('/', uri_path($uri));
+        if ((array_key_exists(self::uri_position(), $ar_uri) && array_key_exists($ar_uri[self::uri_position()], self::list()))
         ) {
-            $code = $ar_uri[$position];
-            self::field('in_uri', true);
-        } elseif (($cookie_var = self::cookie_var())&& array_key_exists($cookie_var, $_COOKIE) && (array_key_exists($_COOKIE[$cookie_var], $list))) {
-            $code = $_COOKIE[$cookie_var];
+            return $ar_uri[self::uri_position()];
         }
 
-        if (!$code && !($code = self::default_code()))
+        return false;
+    }
+
+    private static function get_from_cookie()
+    {
+        if (array_key_exists(self::cookie_var(), $_COOKIE) && (array_key_exists($_COOKIE[self::cookie_var()], self::list()))) {
+            return $_COOKIE[self::cookie_var()];
+        }
+
+        return false;
+    }
+
+    public static function load_code()
+    {
+        if ($code = self::get_from_uri($_SERVER['REQUEST_URI'])) {
+            self::field('in_uri', true);
+        } elseif ($code = self::get_from_cookie()) {
+        } else {
+            $code = self::default_code();
+        }
+
+        if (!$code)
             throw new ItemsException();
 
         self::field('code', $code);
-        return $code;
     }
 
     public static function cache($data = null)
@@ -142,18 +147,15 @@ class Module
         return (false !== file_put_contents(self::CACHE_DIR . DIRECTORY_SEPARATOR . self::CACHE_ITEMS_FILE, serialize($data)));
     }
 
-    public static function get_items()
+    public static function load_items()
     {
         $all_items = self::cache();
-        $list = self::list();
-        $code = self::code();
-        $iblock_id = $list[$code];
+        $iblock_id = self::list()[self::code()];
 
         if (!array_key_exists($iblock_id, $all_items))
             throw new ItemsException();
 
         self::field('items', $all_items[$iblock_id]);
-        return $all_items[$iblock_id];
     }
 
     public static function iblock_id($type)

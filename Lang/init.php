@@ -4,7 +4,7 @@ use Lang\Module as Lang;
 
 try {
     Lang::load_settings();
-    Lang::get_iblocks();
+    Lang::load_iblocks();
 
     if (!Lang::active()) {
         Lang::disable();

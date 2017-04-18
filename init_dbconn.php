@@ -2,9 +2,8 @@
 
 require_once $_SERVER["DOCUMENT_ROOT"] . '/include/CUri/functions.php';
 
-foreach (Storage::$ar_disable_uri as $uri) {
-    if (0 === strpos($_SERVER['REQUEST_URI'], $uri))
-        return;
+if (!Storage::need_init_modules($_SERVER['REQUEST_URI'])) {
+    return;
 }
 
 require_once $_SERVER["DOCUMENT_ROOT"] . '/include/CUri/Lang/init.php';
@@ -14,7 +13,7 @@ $site_prefix = Storage::get_site_prefix();
 define('SITE_PREFIX', $site_prefix);
 
 if ($site_prefix && ($uri = Storage::correct_uri($_SERVER['REQUEST_URI']))) {
-    header('Location: '.$uri);
+    header('Location: ' . $uri);
     exit();
 }
 unset($site_prefix);

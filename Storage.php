@@ -9,9 +9,21 @@ class Storage
     const URL_REWRITE = 'CURI_URL_REWRITE';
 
     private static $_storage = [];
-    public static $ar_disable_uri = [
+    private static $ar_disable_uri = [
         '/bitrix'
     ];
+
+
+    public static function need_init_modules($request_uri) {
+        foreach (self::$ar_disable_uri as $uri) {
+            if (0 === strpos($request_uri, $uri))
+                return false;
+        }
+
+        return true;
+    }
+
+
 
 
     public static function add($class_name)
