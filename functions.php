@@ -20,8 +20,7 @@ function dd($d, $die = true)
 
 function check_array($arr)
 {
-    if (!is_array($arr) || empty($arr)) return false;
-    return true;
+    return (is_array($arr) && count($arr));
 }
 
 function uri_path($uri)
@@ -33,9 +32,7 @@ function uri_path($uri)
 function uri_query($uri)
 {
     $parse_uri = parse_url($uri);
-    if (!array_key_exists("query", $parse_uri))
-        return "";
-    return "?" . $parse_uri["query"];
+    return array_key_exists("query", $parse_uri) ? ("?" . $parse_uri["query"]) : "";
 }
 
 function find_in(array $search, array $subject, $position = null)
