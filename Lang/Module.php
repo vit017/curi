@@ -32,6 +32,16 @@ class Module extends \CUriObject
         return true;
     }
 
+    public static function load_items()
+    {
+        $all_items = static::cache();
+        $iblock_id = static::list()[static::code()];
+
+        if (!array_key_exists($iblock_id, $all_items))
+            throw new ItemsException();
+
+        static::field('items', $all_items[$iblock_id]);
+    }
 
     public static function init()
     {
@@ -59,19 +69,5 @@ class Module extends \CUriObject
             return unserialize(file_get_contents(self::CACHE_ITEMS_FILE));
 
         return (false !== file_put_contents(self::CACHE_ITEMS_FILE, serialize($data)));
-    }
-
-
-
-    public static function iblock_id($type)
-    {
-        try {
-            return self::iblocks()[self::code()][$type];
-        }
-        catch (\Exception $e) {
-            return null;
-        }
-
-        //throw new IBlockException();
     }
 }

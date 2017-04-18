@@ -8,6 +8,7 @@ abstract class CUriObject {
 
     abstract static protected function check_settings(array $settings);
     abstract static protected function cache($data = null);
+    abstract static public function load_items();
     abstract static public function init();
 
     public static function __callStatic($code, $arguments)
@@ -94,15 +95,16 @@ abstract class CUriObject {
         static::field('code', $code);
     }
 
-    public static function load_items()
+    public static function iblock_id($type)
     {
-        $all_items = static::cache();
-        $iblock_id = static::list()[static::code()];
+        try {
+            return static::iblocks()[static::code()][$type];
+        }
+        catch (\Exception $e) {
+            return null;
+        }
 
-        if (!array_key_exists($iblock_id, $all_items))
-            throw new ItemsException();
-
-        static::field('items', $all_items[$iblock_id]);
+        //throw new IBlockException();
     }
 
 }

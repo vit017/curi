@@ -4,7 +4,7 @@ use City\Module as City;
 
 try {
     City::load_settings();
-    City::get_iblocks();
+    City::load_iblocks();
     if (!City::active()) {
         City::disable();
     }
