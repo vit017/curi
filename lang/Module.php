@@ -71,7 +71,10 @@ class Module
             return $code;
         }
 
-        return $this->default();
+        $code = $this->default();
+        $this->iblockID = $iblocks[$code];
+        
+        return $code;
     }
 
     private function data()
