@@ -74,10 +74,7 @@ function uri_remove($uri, $position)
     return $new_uri;
 }
 
-function tr($text, $lang = false)
+function tr($text)
 {
-    if (class_exists("CUriLang") && CUriLang::get_instance()->is_active())
-        return CUriLang::tr($text, $lang);
-
-    return $text;
+    return CUri\lang\Module::instance()->tr($text);
 }
