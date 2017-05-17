@@ -71,7 +71,7 @@ class Module
             return $code;
         }
 
-        return false;
+        return $this->default();
     }
 
     private function data()
