@@ -66,14 +66,9 @@ class Module
         $code = $this->default();//in uri, in cookie
         $iblocks = $this->info('iblocks')['langs'];
 
-        if (array_key_exists($code, $iblocks)) {
-            $this->iblockID = $iblocks[$code];
-            return $code;
-        }
-
-        $code = $this->default();
+        $code = array_key_exists($code, $iblocks) ? $code : $this->default();
         $this->iblockID = $iblocks[$code];
-        
+
         return $code;
     }
 
